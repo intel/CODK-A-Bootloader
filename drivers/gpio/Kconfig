@@ -1,0 +1,7 @@
+#
+# GPIO infrastructure and drivers
+#
+
+menu "GPIO"
+endmenu
+

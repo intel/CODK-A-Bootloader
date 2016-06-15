@@ -1,0 +1,4 @@
+config CHIP_VENDOR_INTEL
+		bool "INTEL"
+	help
+	 Intel is the vendor

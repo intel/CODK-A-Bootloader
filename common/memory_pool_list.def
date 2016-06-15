@@ -1,0 +1,34 @@
+/*
+ * Definition of the memory pools used by balloc/bfree:
+ *  DECLARE_MEMORY_POOL( <index>, <size>, <count>, <align> )
+ *  <index> : must start at 0 and be of consecutive values *
+ *  <size>  : size in bytes of each block from the pool
+ *  <count> : number of blocks in the pool
+ *
+ *  * Pool definitions must be sorted according the block size
+ *  value: pool with <index> 0 must have the smallest <size>.
+ */
+
+#ifndef CUNIT_TEST
+
+DECLARE_MEMORY_POOL(0,8,1)
+DECLARE_MEMORY_POOL(1,16,21)
+DECLARE_MEMORY_POOL(2,32,12)
+DECLARE_MEMORY_POOL(3,64,3)
+DECLARE_MEMORY_POOL(4,128,2)
+DECLARE_MEMORY_POOL(5,256,2)
+DECLARE_MEMORY_POOL(6,512,5)
+DECLARE_MEMORY_POOL(7,2048,5)
+
+
+
+
+#else
+/* The following configuration is only used for Unit tests: */
+DECLARE_MEMORY_POOL(0,8,8)
+DECLARE_MEMORY_POOL(1,16,6)
+DECLARE_MEMORY_POOL(2,32,4)
+
+
+#endif
+#undef DECLARE_MEMORY_POOL

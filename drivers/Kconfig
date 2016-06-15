@@ -1,0 +1,6 @@
+menu "Device Drivers"
+
+source "drivers/misc/Kconfig"
+source "drivers/usb/Kconfig"
+
+endmenu

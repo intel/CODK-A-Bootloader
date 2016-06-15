@@ -1,0 +1,63 @@
+#
+# Copyright (c) 2016, Intel Corporation
+# All rights reserved.
+# 
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+# 
+# 1. Redistributions of source code must retain the above copyright notice,
+# this list of conditions and the following disclaimer.
+# 
+# 2. Redistributions in binary form must reproduce the above copyright notice,
+# this list of conditions and the following disclaimer in the documentation
+# and/or other materials provided with the distribution.
+# 
+# 3. Neither the name of the copyright holder nor the names of its
+# contributors may be used to endorse or promote products derived from this
+# software without specific prior written permission.
+# 
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
+#
+
+# Use a default build tag when none is set by the caller
+NOWDATE     := $(shell date +"%Y%m%d%H%M%S")
+BUILD_TAG   ?= custom_build_$(USER)@$(HOSTNAME)$(NOWDATE)
+
+# These are used for the binary header generation
+PROJECT_NAME   ?= Quark_SE
+
+# Set to 1.0.0 when PV is reached
+VERSION_MAJOR  ?= 0
+VERSION_MINOR  ?= 0
+VERSION_PATCH  ?= 0
+
+# Get build number from environment or generate from YYWW
+ifeq ($(BUILD_NUMBER),)
+BUILD_NUMBER_PADDED := $(shell date +"%M%S")
+else
+BUILD_NUMBER_PADDED := $(shell printf "%04d" $(BUILD_NUMBER))
+endif
+BUILD_NUMBER_TRUNCATED = $(shell printf "%.4s" $(BUILD_NUMBER_PADDED))
+
+# If BUILD_TYPE is defined, use its first letter
+ifneq ($(BUILD_TYPE),)
+BUILD_LETTER = $(shell printf "%c" $(BUILD_TYPE))
+else
+# Custom Build
+BUILD_LETTER = C
+endif
+
+# By default use the following:
+# Project code: ARD1, Binary Info: 000000, Year: %g, Workweek: %V
+# Type: C (=Custom build), BuildNumber: %M%S
+VERSION_STRING_SUFFIX ?= $(shell date +"%g%V")$(BUILD_LETTER)$(BUILD_NUMBER_TRUNCATED)

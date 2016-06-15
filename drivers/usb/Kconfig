@@ -1,0 +1,5 @@
+#
+# USB device configuration
+#
+
+menuconfig USB_SUPPORT

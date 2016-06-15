@@ -1,0 +1,347 @@
+#
+# For a description of the syntax of this configuration file,
+# see misc/tools/kconfig-language.txt.
+#
+
+mainmenu "Bootloader configuration"
+
+menu "Build Setup"
+endmenu
+
+config EXPERIMENTAL
+	bool "Prompt for development and/or incomplete code/drivers"
+
+config DEFAULT_SMALL
+	bool "Default to smallest size"
+	default n
+	---help---
+		When options are present, the default value for certain options will
+		be the one the results in the smallest size (at a loss of featurs).
+		The default is a fuller feature set at a larger size.
+
+		NOTE: This option does not prevent you from overriding the default
+		to select another alternative.  Nor does it affect the settings that
+		have already been selected in your configuration file.  This applies
+		only to new settings that require a default value.
+
+menu "Build Configuration"
+
+menu "Customize Header Files"
+
+config ARCH_STDINT_H
+	bool "stdint.h"
+	default n
+	---help---
+		The stdint.h header file can be found at nuttx/include/stdint.h.
+		However, that header includes logic to redirect the inclusion of an
+		architecture specific header file like:
+
+			#ifdef CONFIG_ARCH_STDINT_H
+			#  include <arch/stdint.h>
+			#else
+			...
+			#endif
+
+		Recall that that include path, include/arch, is a symbolic link and
+		will refer to a version of stdint.h at nuttx/arch/<architecture>/include/stdint.h.
+
+config ARCH_STDBOOL_H
+	bool "stdbool.h"
+	default n
+	---help---
+		The stdbool.h header file can be found at nuttx/include/stdbool.h.
+		However, that header includes logic to redirect the inclusion of an
+		architecture specific header file like:
+
+			#ifdef CONFIG_ARCH_STDBOOL_H
+			#  include <arch/stdbool.h>
+			#else
+			...
+			#endif
+
+		Recall that that include path, include/arch, is a symbolic link and
+		will refer to a version of stdbool.h at nuttx/arch/<architecture>/include/stdbool.h.
+
+config ARCH_MATH_H
+	bool "math.h"
+	default n
+	---help---
+		There is also a re-directing version of math.h in the source tree.
+		However, it resides out-of-the-way at include/nuttx/math.h because it
+		conflicts too often with the system math.h. If ARCH_MATH_H=y is
+		defined, however, the top-level makefile will copy the redirecting
+		math.h header file from include/nuttx/math.h to include/math.h. math.h
+		will then include the architecture-specific version of math.h that you
+		must provide at nuttx/arch/>architecture</include/math.h.
+
+			#ifdef CONFIG_ARCH_MATH_H
+			#  include <arch/math.h>
+			#endif
+
+		So for the architectures that define ARCH_MATH_H=y, include/math.h
+		will be the redirecting math.h header file; for the architectures
+		that don't select ARCH_MATH_H, the redirecting math.h header file
+		will stay out-of-the-way in include/nuttx/.
+
+config ARCH_FLOAT_H
+	bool "float.h"
+	default n
+	---help---
+		The float.h header file defines the properties of your floating
+		point implementation.  It would always be best to use your
+		toolchain's float.h header file but if none is available, a default
+		float.h header file will provided if this option is selected.  However
+		there is no assurance that the settings in this float.h are actually
+		correct for your platform!
+
+config ARCH_STDARG_H
+	bool "stdarg.h"
+	default n
+	---help---
+		There is also a redirecting version of stdarg.h in the source tree
+		as well. It also resides out-of-the-way at include/nuttx/stdarg.h.
+		This is because you should normally use your toolchain's stdarg.h
+		file. But sometimes, your toolchain's stdarg.h file may have other
+		header file dependencies and so may not be usable in the NuttX build
+		environment. In those cases, you may have to create a architecture-
+		specific stdarg.h header file at nuttx/arch/<architecture>/include/stdarg.h
+
+		If ARCH_STDARG_H=y is defined, the top-level makefile will copy the
+		re-directing stdarg.h header file from include/nuttx/stdarg.h to
+		include/stdarg.h. So for the architectures that cannot use their
+		toolchain's stdarg.h file, they can use this alternative by defining
+		ARCH_STDARG_H=y and providing. If ARCH_STDARG_H, is not defined, then
+		the stdarg.h header file will stay out-of-the-way in include/nuttx/.
+
+endmenu # Customize Header Files
+
+menu "Debug Options"
+
+config DEBUG
+	bool "Enable Debug Features"
+	default n
+	---help---
+		Enables built-in debug features.  Selecting this option will (1) Enable
+		debug assertions in the code, (2) enable extended parameter testing in
+		many functions, and (3) enable support for debug output to the SYSLOG.
+		Note that enabling this option by itself does not produce debug output.
+		Debug output must also be selected on a subsystem-by-subsystem basis.
+
+config ARCH_HAVE_STACKCHECK
+	bool
+	default n
+
+config ARCH_HAVE_HEAPCHECK
+	bool
+	default n
+
+if DEBUG
+
+config DEBUG_VERBOSE
+	bool "Enable Debug Verbose Output"
+	default n
+	---help---
+		Enables verbose debug output (assuming debug features are enabled).
+		As a general rule, when DEBUG is enabled only errors will be
+		reported in the debug SYSLOG output.  But if you also enable
+		DEBUG_VERBOSE, then very chatty (and often annoying) output will be
+		generated.  This means there are two levels of debug output:
+		errors-only and everything.
+
+comment "Subsystem Debug Options"
+
+config DEBUG_CRYPTO
+	bool "Crypto Debug Output"
+	default n
+	depends on CRYPTO
+	---help---
+		Enable Crypto debug SYSLOG output (disabled by default)
+
+config DEBUG_USB
+	bool "USB Debug Output"
+	default n
+	depends on USBDEV || USBHOST
+	---help---
+		Enable usb debug SYSLOG output (disabled by default)
+
+config DEBUG_FS
+	bool "File System Debug Output"
+	default n
+	---help---
+		Enable file system debug SYSLOG output (disabled by default)
+
+config DEBUG_SYSCALL
+	bool "SYSCALL Debug Output"
+	default n
+	depends on NUTTX_KERNEL
+	---help---
+		Enable very low level output related to system calls.  This gives
+		you basically a poor man's version of strace.
+
+config DEBUG_STACK
+	bool "Stack usage debug hooks"
+	default n
+	depends on ARCH_HAVE_STACKCHECK
+	---help---
+		Enable hooks to check stack usage.  Only supported by a few architectures.
+
+config DEBUG_HEAP
+	bool "Heap usage debug hooks"
+	default n
+	depends on ARCH_HAVE_HEAPCHECK
+	---help---
+		Enable hooks to check heap usage.  Only supported by a few architectures.
+
+comment "Driver Debug Options"
+
+config DEBUG_LEDS
+	bool "Low-level LED Debug Output"
+	default n
+	depends on ARCH_HAVE_LEDS
+	---help---
+		Enable low level debug from board-specific LED logic.  Support for
+		this debug option is board-specific and may not be available for
+		some boards.
+
+config DEBUG_INPUT
+	bool "Input Device Debug Output"
+	default n
+	depends on INPUT
+	---help---
+		Enable low level debug SYSLOG output from the input device drivers
+		such as mice and touchscreens (disabled by default).  Support for
+		this debug option is board-specific and may not be available for
+		some boards.
+
+config DEBUG_I2C
+	bool "I2C Debug Output"
+	default n
+	depends on I2C
+	---help---
+		Enable I2C driver debug SYSLOG output (disabled by default).
+		Support for this debug option is architecture-specific and may not
+		be available for some MCUs.
+
+config DEBUG_SPI
+	bool "SPI Debug Output"
+	default n
+	depends on SPI
+	---help---
+		Enable I2C driver debug SYSLOG output (disabled by default).
+		Support for this debug option is architecture-specific and may not
+		be available for some MCUs.
+
+config DEBUG_PWM
+	bool "PWM Debug Output"
+	default n
+	depends on PWM
+	---help---
+		Enable PWM driver debug SYSLOG output (disabled by default).
+		Support for this debug option is architecture-specific and may not
+		be available for some MCUs.
+
+config DEBUG_SDIO
+	bool "SDIO Debug Output"
+	default n
+	depends on MMCSD_SDIO
+	---help---
+		Enable SDIO driver debug SYSLOG output (disabled by default).
+		Support for this debug option is architecture-specific and may not
+		be available for some MCUs.
+
+config DEBUG_GPIO
+	bool "GPIO Debug Output"
+	default n
+	---help---
+		Enable GPIO-releated debug SYSLOG output (disabled by default).
+		Support for this debug option is architecture-specific and may not
+		be available for some MCUs.
+
+config DEBUG_DMA
+	bool "DMA Debug Output"
+	default n
+	depends on ARCH_DMA
+	---help---
+		Enable DMA-releated debug SYSLOG output (disabled by default).
+		Support for this debug option is architecture-specific and may not
+		be available for some MCUs.
+
+config DEBUG_RTC
+	bool "RTC Debug Output"
+	default n
+	depends on RTC
+	---help---
+		Enable RTC driver debug SYSLOG output (disabled by default).
+		Support for this debug option is architecture-specific and may not
+		be available for some MCUs.
+
+config DEBUG_WATCHDOG
+	bool "Watchdog Timer Debug Output"
+	default n
+	depends on WATCHDOG
+	---help---
+		Enable watchdog timer debug SYSLOG output (disabled by default).
+		Support for this debug option is architecture-specific and may not
+		be available for some MCUs.
+
+config DEBUG_TIMER
+	bool "Timer Debug Output"
+	default n
+	depends on TIMER
+	---help---
+		Enable timer debug SYSLOG output (disabled by default).
+		Support for this debug option is architecture-specific and may not
+		be available for some MCUs.
+
+endif # DEBUG
+
+config DEBUG_SYMBOLS
+	bool "Generate Debug Symbols"
+	default n
+	---help---
+		Build with debug symbols (needed for use with a debugger).
+
+endmenu # Debug Options
+
+choice
+	prompt "Optimization Level"
+	default DEBUG_NOOPT if DEBUG_SYMBOLS
+	default DEBUG_FULLOPT if !DEBUG_SYMBOLS
+
+config DEBUG_NOOPT
+	bool "Suppress Optimization"
+	---help---
+		Build without optimization.  This is often helpful when debugging code.
+
+config DEBUG_FULLOPT
+	bool "Normal, Full optimization"
+	---help---
+		Build full optimization.  This is the normal case for production
+		firmware.
+
+endchoice # Optimization Level
+
+config DEBUG_OPTLEVEL
+	string "Custom Optimization Level"
+	default "-O2"
+	depends on DEBUG_CUSTOMOPT
+	---help---
+		This string represents the custom optimization level that will be used if DEBUG_CUSTOMOPT.
+
+endmenu # Build Setup
+
+menu "Board selection"
+source "board/Kconfig"
+endmenu
+
+menu "Device Drivers"
+source drivers/Kconfig
+endmenu
+
+menu "Crypto"
+source lib/crypto/Kconfig
+endmenu
+
+menu "Security"
+source lib/security/Kconfig
+endmenu
