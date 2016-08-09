@@ -36,8 +36,8 @@ BOOTLOADER_KCONFIG_FILE ?= $(OUT)/.config
 ifndef COS_BLOB
 $(error "COS not defined")
 endif
-# arduino101_firmware bsp includes
-TD_BSP_INCS = $(T)/arduino101_firmware/bsp/include
+# firmware bsp includes
+TD_BSP_INCS = $(T)/firmware/bsp/include
 
 # FIXME: board defconfig file shall not be hard-coded
 BOOTLOADER_DEFCONFIG ?= $(BOOTLOADER_ROOT)/board/intel/configs/$(BOARD)_defconfig
@@ -45,7 +45,7 @@ BOOTLOADER_DEFCONFIG ?= $(BOOTLOADER_ROOT)/board/intel/configs/$(BOARD)_defconfi
 # FIXME: linker script shall not be hard-coded
 BOOTLOADER_LDS ?= $(BOOTLOADER_ROOT)/core/x86/quark/quark.lds
 
-CROSS_COMPILE ?= $(T)/arduino101_firmware/external/gcc-i586-pc-elf/bin/i586-pc-elf-
+CROSS_COMPILE ?= $(T)/firmware/external/gcc-i586-pc-elf/bin/i586-pc-elf-
 
 include $(BOOTLOADER_ROOT)/build/Makefile.version
 include $(BOOTLOADER_ROOT)/build/Makefile.vars

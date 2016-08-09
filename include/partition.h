@@ -64,7 +64,7 @@
 
 /** USB Driver static data shared between
  * QRK Bootloader and QRK App
- * NOTE: Must match arduino101_firmware/device/quark_se/common/include/quark_se_mapping.h
+ * NOTE: Must match firmware/device/quark_se/common/include/quark_se_mapping.h
  */
 #define BOOTLOADER_SHARED_DATA  0xa8000400
 
